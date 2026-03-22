@@ -1,0 +1,94 @@
+
+<nav class="nav">
+    <a href="/">Dashboard</a>
+    <a href="/dataset">Dataset</a>
+    <a href="/history">History</a>
+    <a href="/insights">Insights</a>
+    <a href="/about">About</a>
+    <a href="/report">Report</a>
+
+</nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dataset | AI Crime Analytics</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark">
+
+<div class="bg"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>🤖 AI Panel</h2>
+    <a href="/">Dashboard</a>
+    <a href="/dataset" class="active">Dataset</a>
+    <a href="/history">History</a>
+    <a href="/insights">Insights</a>
+    <a href="/about">About</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <header>
+        <h1>📊 Crime Dataset</h1>
+        <p>IPC Crime Data (Preview)</p>
+    </header>
+
+    <!-- STATS -->
+    <div class="row">
+        <div class="glass card">
+            <h3>Total Rows</h3>
+            <span>{{ total_rows }}</span>
+        </div>
+        <div class="glass card">
+            <h3>Total Columns</h3>
+            <span>{{ total_cols }}</span>
+        </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="glass table-box">
+        <input type="text" id="search" placeholder="🔍 Search..." onkeyup="searchTable()">
+
+        <div class="table-scroll">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                            <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data %}
+                        <tr>
+                            {% for col in columns %}
+                                <td>{{ row[col] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function searchTable() {
+    let input = document.getElementById("search").value.toLowerCase();
+    let rows = document.querySelectorAll("#dataTable tbody tr");
+
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(input)
+            ? ""
+            : "none";
+    });
+}
+</script>
+
+</body>
+</html>

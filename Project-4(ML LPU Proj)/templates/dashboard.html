@@ -1,0 +1,98 @@
+<nav class="nav">
+    <a href="/">Dashboard</a>
+    <a href="/dataset">Dataset</a>
+    <a href="/history">History</a>
+    <a href="/insights">Insights</a>
+    <a href="/about">About</a>
+    <a href="/report">Report</a>
+
+</nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Crime Analytics</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark">
+
+<div class="bg"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>🤖 AI Panel</h2>
+    <a href="/">Dashboard</a>
+    <a href="/dataset">Dataset</a>
+    <a href="/history">History</a>
+    <a href="/insights">Insights</a>
+    <a href="/about">About</a>
+
+    <button onclick="toggleTheme()">🌗 Toggle Theme</button>
+    <button onclick="startVoice()">🎤 Voice Input</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <header>
+        <h1>AI Crime Analytics</h1>
+        <p>Smart Prediction • Real-Time Insights</p>
+    </header>
+
+    <!-- CONTROLS -->
+    <div class="glass controls">
+        <select id="state">
+            <option value="1">Low Crime State</option>
+            <option value="2">Medium Crime State</option>
+            <option value="3">High Crime State</option>
+        </select>
+
+        <select id="district">
+            <option value="1">Rural District</option>
+            <option value="2">Semi-Urban District</option>
+            <option value="3">Urban District</option>
+        </select>
+
+        <select id="population">
+            <option value="1">Low Population</option>
+            <option value="2">Medium Population</option>
+            <option value="3">High Population</option>
+        </select>
+
+        <label>👮 Police Strength</label>
+        <input type="range" id="police" min="1" max="10" value="5">
+
+        <label>🏙 Urbanization</label>
+        <input type="range" id="urban" min="1" max="10" value="5">
+
+        <button onclick="predict()">⚡ Predict Crime</button>
+    </div>
+
+    <!-- KPI ROW -->
+    <div class="row">
+        <div class="glass card">
+            <h3>Predicted Crimes</h3>
+            <span id="crimeValue">--</span>
+        </div>
+
+        <div class="glass card">
+            <h3>Crime Risk Gauge</h3>
+            <div class="gauge">
+                <div id="needle"></div>
+            </div>
+            <span id="riskLevel">--</span>
+        </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="glass chart">
+        <canvas id="crimeChart"></canvas>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

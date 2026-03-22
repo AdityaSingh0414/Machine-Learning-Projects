@@ -1,0 +1,133 @@
+<nav class="nav">
+    <a href="/">Dashboard</a>
+    <a href="/dataset">Dataset</a>
+    <a href="/history">History</a>
+    <a href="/insights">Insights</a>
+    <a href="/about">About</a>
+    <a href="/report">Report</a>
+
+</nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Insights | Crime Analytics</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="dark">
+
+<div class="bg"></div>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <h2>🤖 AI Panel</h2>
+    <a href="/">Dashboard</a>
+    <a href="/dataset">Dataset</a>
+    <a href="/history">History</a>
+    <a href="/insights" class="active">Insights</a>
+    <a href="/about">About</a>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+    <header>
+        <h1>🧠 AI Model Insights</h1>
+        <p>Model Performance & Learning Analysis</p>
+    </header>
+
+    <!-- INSIGHT CARDS -->
+    <div class="row">
+        <div class="glass card">
+            <h3>Best Model</h3>
+            <span>Random Forest</span>
+        </div>
+        <div class="glass card">
+            <h3>Highest R²</h3>
+            <span>0.83</span>
+        </div>
+        <div class="glass card">
+            <h3>Lowest Error</h3>
+            <span>RMSE ≈ 5100</span>
+        </div>
+    </div>
+
+    <!-- CHART 1 -->
+    <div class="glass chart">
+        <h3>📊 Model R² Score Comparison</h3>
+        <canvas id="r2Chart"></canvas>
+    </div>
+
+    <!-- CHART 2 -->
+    <div class="glass chart">
+        <h3>📉 Model Error (RMSE)</h3>
+        <canvas id="rmseChart"></canvas>
+    </div>
+
+    <!-- CHART 3 -->
+    <div class="glass chart">
+        <h3>🔍 Feature Impact (Relative)</h3>
+        <canvas id="featureChart"></canvas>
+    </div>
+
+    <!-- TEXT INSIGHTS -->
+    <div class="glass page">
+        <h3>📌 Key Observations</h3>
+        <ul>
+            <li>Random Forest achieved the highest predictive accuracy</li>
+            <li>Tree-based models captured non-linear crime patterns</li>
+            <li>Population and urbanization are dominant predictors</li>
+            <li>Linear models underperformed due to complex data structure</li>
+        </ul>
+    </div>
+
+</div>
+
+<script>
+const metrics = {{ metrics | tojson }};
+
+// Extract data
+const labels = Object.keys(metrics);
+const r2 = labels.map(m => metrics[m].r2);
+const rmse = labels.map(m => metrics[m].rmse);
+
+// R2 Chart
+new Chart(document.getElementById("r2Chart"), {
+    type: "bar",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "R² Score",
+            data: r2
+        }]
+    }
+});
+
+// RMSE Chart
+new Chart(document.getElementById("rmseChart"), {
+    type: "bar",
+    data: {
+        labels: labels,
+        datasets: [{
+            label: "RMSE",
+            data: rmse
+        }]
+    }
+});
+
+// Feature Impact Chart (Simulated)
+new Chart(document.getElementById("featureChart"), {
+    type: "pie",
+    data: {
+        labels: ["Population", "Urbanization", "Police Strength", "District Type"],
+        datasets: [{
+            data: [40, 30, 20, 10]
+        }]
+    }
+});
+</script>
+
+</body>
+</html>

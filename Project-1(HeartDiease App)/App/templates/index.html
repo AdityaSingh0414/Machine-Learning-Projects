@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeartWise | Clinical Intelligence Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Plotly.js for high-end charts -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js" charset="utf-8"></script>
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <div class="app-layout">
+        <aside class="sidebar glass">
+            <div class="logo">
+                <h1>HeartWise <span class="badge">PRO</span></h1>
+            </div>
+            <nav>
+                <button class="nav-item active" data-view="dashboard-view">
+                    <span class="icon">📊</span> Dashboard
+                </button>
+                <button class="nav-item" data-view="analytics-view">
+                    <span class="icon">📈</span> Health Analytics
+                </button>
+                <button class="nav-item" data-view="prediction-view">
+                    <span class="icon">🩺</span> Clinical Predictor
+                </button>
+                <button class="nav-item" data-view="data-view">
+                    <span class="icon">📁</span> Dataset Explorer
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <p>System Status: <span class="status-active">Online</span></p>
+            </div>
+        </aside>
+
+        <main class="content">
+            <!-- DASHBOARD VIEW -->
+            <section id="dashboard-view" class="view">
+                <header>
+                    <h2>System Overview</h2>
+                    <p>Key clinical indicators and dataset summary</p>
+                </header>
+                <div class="metrics-grid">
+                    <div class="metric-card glass">
+                        <label>Total Cases</label>
+                        <h4 id="stat-total">--</h4>
+                    </div>
+                    <div class="metric-card glass">
+                        <label>Mean Patient Age</label>
+                        <h4 id="stat-age">--</h4>
+                    </div>
+                    <div class="metric-card glass">
+                        <label>High Risk Prevalence</label>
+                        <h4 id="stat-prevalence">--</h4>
+                    </div>
+                    <div class="metric-card glass">
+                        <label>Avg Max Heart Rate</label>
+                        <h4 id="stat-hr">--</h4>
+                    </div>
+                </div>
+                <div class="dashboard-charts">
+                    <div class="chart-container glass">
+                        <h3>Risk Distribution</h3>
+                        <div id="risk-pie-chart" class="chart"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ANALYTICS VIEW -->
+            <section id="analytics-view" class="view hidden">
+                <header>
+                    <h2>Health Analytics</h2>
+                    <p>Deep dive into patient clinical correlations</p>
+                </header>
+                <div class="analytics-grid">
+                    <div class="chart-container-large glass">
+                        <h3>Correlation Matrix</h3>
+                        <div id="corr-heatmap" class="chart-large"></div>
+                    </div>
+                    <div class="chart-container glass">
+                        <h3>Cholesterol Distribution</h3>
+                        <div id="chol-dist-chart" class="chart"></div>
+                    </div>
+                    <div class="chart-container glass">
+                        <h3>Age vs Risk Profile</h3>
+                        <div id="age-dist-chart" class="chart"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PREDICTION VIEW -->
+            <section id="prediction-view" class="view hidden">
+                <header>
+                    <h2>Clinical Predictor</h2>
+                    <p>Real-time cardiac risk assessment</p>
+                </header>
+                <section class="card glass">
+                    <form id="prediction-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="Age">Age</label>
+                                <input type="number" id="Age" name="Age" min="1" max="120" value="45" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="Sex">Sex</label>
+                                <select id="Sex" name="Sex" required>
+                                    <option value="M">Male</option>
+                                    <option value="F">Female</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="ChestPainType">Chest Pain Type</label>
+                                <select id="ChestPainType" name="ChestPainType" required>
+                                    <option value="ASY">Asymptomatic</option>
+                                    <option value="ATA">Atypical Angina</option>
+                                    <option value="NAP">Non-Anginal Pain</option>
+                                    <option value="TA">Typical Angina</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="RestingBP">Resting Blood Pressure</label>
+                                <input type="number" id="RestingBP" name="RestingBP" value="130" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="Cholesterol">Serum Cholesterol</label>
+                                <input type="number" id="Cholesterol" name="Cholesterol" value="230" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="FastingBS">Fasting Blood Sugar > 120</label>
+                                <select id="FastingBS" name="FastingBS" required>
+                                    <option value="0">False</option>
+                                    <option value="1">True</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="RestingECG">Resting ECG Results</label>
+                                <select id="RestingECG" name="RestingECG" required>
+                                    <option value="Normal">Normal</option>
+                                    <option value="ST">ST-T Abnormality</option>
+                                    <option value="LVH">LV Hypertrophy</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="MaxHR">Max Heart Rate</label>
+                                <input type="number" id="MaxHR" name="MaxHR" value="140" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ExerciseAngina">Exercise Induced Angina</label>
+                                <select id="ExerciseAngina" name="ExerciseAngina" required>
+                                    <option value="N">No</option>
+                                    <option value="Y">Yes</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="Oldpeak">ST Depression (Oldpeak)</label>
+                                <input type="number" step="0.1" id="Oldpeak" name="Oldpeak" value="1.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ST_Slope">ST Slope Type</label>
+                                <select id="ST_Slope" name="ST_Slope" required>
+                                    <option value="Flat">Flat</option>
+                                    <option value="Up">Up-sloping</option>
+                                    <option value="Down">Down-sloping</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="submit-btn">Run Diagnostic Analysis</button>
+                        </div>
+                    </form>
+                </section>
+                <div id="results-section" class="card glass hidden">
+                    <!-- Same layout as before but integrated -->
+                    <div class="results-container">
+                        <div id="risk-score-ring" class="risk-circle">
+                            <span id="probability-text">0%</span>
+                        </div>
+                        <div class="results-text">
+                            <h3>Analysis Result: <span id="risk-level">Calculating...</span></h3>
+                            <p id="result-desc"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- DATA VIEW -->
+            <section id="data-view" class="view hidden">
+                <header>
+                    <h2>Dataset Explorer</h2>
+                    <p>Recent clinical snapshots from the registry</p>
+                </header>
+                <div class="table-container glass">
+                    <table id="raw-data-table">
+                        <thead>
+                            <tr id="table-header">
+                                <!-- Dynamic headers -->
+                            </tr>
+                        </thead>
+                        <tbody id="table-body">
+                            <!-- Dynamic rows -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

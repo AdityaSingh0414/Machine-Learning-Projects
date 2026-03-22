@@ -1,0 +1,75 @@
+
+<nav class="nav">
+    <a href="/">Dashboard</a>
+    <a href="/dataset">Dataset</a>
+    <a href="/history">History</a>
+    <a href="/insights">Insights</a>
+    <a href="/about">About</a>
+    <a href="/report">Report</a>
+
+</nav>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prediction History | AI Crime Analytics</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="dark">
+
+<div class="bg"></div>
+
+<!-- SIDEBAR / NAV -->
+<div class="sidebar">
+    <h2>🤖 AI Panel</h2>
+    <a href="/">Dashboard</a>
+    <a href="/dataset">Dataset</a>
+    <a href="/history" class="active">History</a>
+    <a href="/insights">Insights</a>
+    <a href="/about">About</a>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+    <header>
+        <h1>🕒 Prediction History</h1>
+        <p>Saved AI Predictions</p>
+    </header>
+
+    <div class="glass page">
+
+        {% if history %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Predicted Crimes</th>
+                        <th>Risk Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for h in history %}
+                    <tr>
+                        <td>{{ h.time }}</td>
+                        <td>{{ h.prediction }}</td>
+                        <td>
+                            <span class="risk-badge {{ h.risk|lower }}">
+                                {{ h.risk }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No predictions yet.</p>
+        {% endif %}
+
+    </div>
+
+</div>
+
+</body>
+</html>
