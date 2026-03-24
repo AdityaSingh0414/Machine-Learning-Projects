@@ -8,7 +8,10 @@ import {
   AlertTriangle, 
   Clock,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  Heart,
+  FileText,
+  TrendingUp
 } from 'lucide-react';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
@@ -42,8 +45,10 @@ export default function HeartWisePro() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const fetchData = async () => {
       try {
         const res = await axios.get('http://localhost:8000/api/v1/analytics');
@@ -97,9 +102,11 @@ export default function HeartWisePro() {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                   <div className="lg:col-span-2 glass-card h-[450px]">
                     <h4 className="text-lg font-bold mb-6 flex items-center gap-2">
-                       <LineChart className="w-5 h-5 text-indigo-400" /> Age vs. Risk Correlation Table
+                       <TrendingUp className="w-5 h-5 text-indigo-400" /> Age vs. Risk Correlation Table
                     </h4>
-                    <ResponsiveContainer width="100%" height="85%">
+                    <div className="h-[320px] w-full">
+                    {mounted && data?.charts.age_risk_trend && (
+                    <ResponsiveContainer width="100%" height="100%">
                       <AreaChart data={data?.charts.age_risk_trend}>
                         <defs>
                           <linearGradient id="colorRisk" x1="0" y1="0" x2="0" y2="1">
@@ -114,11 +121,15 @@ export default function HeartWisePro() {
                         <Area type="monotone" dataKey="HeartDisease" stroke="#6366f1" fillOpacity={1} fill="url(#colorRisk)" strokeWidth={3} />
                       </AreaChart>
                     </ResponsiveContainer>
+                    )}
+                    </div>
                   </div>
 
                   <div className="glass-card h-[450px]">
                     <h4 className="text-lg font-bold mb-6">Patient Risk Profile</h4>
-                    <ResponsiveContainer width="100%" height="85%">
+                    <div className="h-[320px] w-full">
+                    {mounted && data?.charts.risk_distribution && (
+                    <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
                           data={data?.charts.risk_distribution}
@@ -135,6 +146,8 @@ export default function HeartWisePro() {
                         <Tooltip />
                       </PieChart>
                     </ResponsiveContainer>
+                    )}
+                    </div>
                   </div>
                 </div>
               </div>
