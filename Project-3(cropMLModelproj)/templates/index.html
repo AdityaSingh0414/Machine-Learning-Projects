@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop AI – Recommendation System</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+/* ---------------------------------
+   GLOBAL STYLES + DARK/LIGHT MODE
+---------------------------------- */
+:root{
+  --primary:#5b6dff;
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:#e5e7eb;
+  --glass:rgba(255,255,255,0.1);
+}
+
+.light-mode{
+  --bg:#f5f5f5;
+  --card:#ffffff;
+  --text:#1e293b;
+  --glass:rgba(0,0,0,0.05);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins', sans-serif;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  min-height:100vh;
+  transition:0.4s;
+}
+
+/* ---------------------------------
+   SIDEBAR
+---------------------------------- */
+.sidebar{
+  width:240px;
+  background:var(--card);
+  padding:20px;
+  border-right:1px solid rgba(255,255,255,0.1);
+  position:fixed;
+  height:100%;
+}
+
+.sidebar h2{
+  font-size:26px;
+  color:var(--primary);
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.sidebar a{
+  display:block;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:12px;
+  color:var(--text);
+  text-decoration:none;
+  transition:0.3s;
+}
+
+.sidebar a:hover{
+  background:var(--primary);
+  color:white;
+}
+
+/* ---------------------------------
+   CHATBOT STYLES
+---------------------------------- */
+#chatbot-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #28a745;
+    color: white;
+    padding: 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 22px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+#chatbot-box {
+    width: 320px;
+    height: 430px;
+    background: white;
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    border-radius: 12px;
+    display: none;
+    flex-direction: column;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+}
+
+#chatbot-header {
+    background: #28a745;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chatbot-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    font-size: 14px;
+}
+
+.user-msg {
+    background: #d1e7dd;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 8px;
+    text-align: right;
+}
+
+.bot-msg {
+    background: #f8d7da;
+    padding: 8px;
+    margin: 5px;
+    border-radius: 8px;
+    text-align: left;
+}
+
+#chatbot-input-area {
+    display: flex;
+    border-top: 1px solid #ccc;
+}
+
+#chat-input {
+    flex: 1;
+    border: none;
+    padding: 10px;
+}
+
+#send-btn {
+    width: 60px;
+    background: #28a745;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* ---------------------------------
+   MAIN CONTAINER
+---------------------------------- */
+.main{
+  margin-left:240px;
+  width:calc(100% - 240px);
+  padding:30px;
+}
+
+.topbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.topbar button{
+  background:var(--primary);
+  border:none;
+  padding:10px 15px;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
+  font-size:14px;
+}
+
+.card{
+  background:var(--glass);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+  backdrop-filter:blur(12px);
+}
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  background:var(--card);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:8px;
+  color:var(--text);
+}
+
+button{
+  background:var(--primary);
+  border:none;
+  padding:12px 18px;
+  color:white;
+  border-radius:10px;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+.pred-box{
+  margin-top:20px;
+  padding:15px;
+  background:#10b981;
+  color:white;
+  border-radius:10px;
+  font-size:22px;
+  text-align:center;
+}
+
+/* Table */
+table{
+  width:100%;
+  margin-top:20px;
+  border-collapse:collapse;
+}
+
+th, td{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,0.2);
+}
+
+th{
+  color:var(--primary);
+}
+</style>
+</head>
+
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <h2>🌾 Crop AI</h2>
+  <a href="/">Predict</a>
+  <a href="/analytics">Analytics</a>
+  <a href="/dataset">Dataset</a>
+  <a href="/history">History</a>
+</div>
+
+<!-- CHATBOT BUTTON + WINDOW -->
+<div id="chatbot-btn">💬</div>
+
+<div id="chatbot-box">
+    <div id="chatbot-header">
+        <span>🌾 Smart Kisan AI</span>
+        <button id="close-chat">✖</button>
+    </div>
+
+    <div id="chatbot-messages"></div>
+
+    <div id="chatbot-input-area">
+        <input type="text" id="chat-input" placeholder="Ask me anything about crops...">
+        <button id="send-btn">➤</button>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <div class="topbar">
+    <h1>Crop Recommendation System</h1>
+    <button id="themeToggle">🌙 Dark Mode</button>
+  </div>
+
+  <div class="card">
+    <h2>Enter Soil Parameters</h2>
+
+    <form action="/predict" method="POST">
+      <div class="grid-2">
+        <div><label>Nitrogen (N)</label><input type="number" name="N" required></div>
+        <div><label>Phosphorus (P)</label><input type="number" name="P" required></div>
+        <div><label>Potassium (K)</label><input type="number" name="K" required></div>
+        <div><label>Temperature (°C)</label><input type="number" name="temperature" step="0.1" required></div>
+        <div><label>Humidity (%)</label><input type="number" name="humidity" required></div>
+        <div><label>pH Value</label><input type="number" name="ph" step="0.1" required></div>
+        <div><label>Rainfall (mm)</label><input type="number" name="rainfall" required></div>
+      </div>
+
+      <button type="submit">Predict Crop</button>
+
+      {% if prediction_text %}
+      <div class="pred-box">
+        {{ prediction_text }}
+      </div>
+      {% endif %}
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Prediction History</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Crop</th><th>N</th><th>P</th><th>K</th><th>Temp</th><th>Humidity</th>
+        </tr>
+      </thead>
+      <tbody id="historyTable"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<script>
+/* DARK MODE */
+document.getElementById("themeToggle").onclick = function(){
+    document.body.classList.toggle("light-mode");
+    this.innerText = document.body.classList.contains("light-mode")
+      ? "🌙 Dark Mode"
+      : "🌞 Light Mode";
+};
+
+/* CHATBOT LOGIC */
+document.getElementById("chatbot-btn").onclick = () => {
+    document.getElementById("chatbot-box").style.display = "flex";
+};
+
+document.getElementById("close-chat").onclick = () => {
+    document.getElementById("chatbot-box").style.display = "none";
+};
+
+document.getElementById("send-btn").onclick = sendMessage;
+document.getElementById("chat-input").addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
+});
+
+function sendMessage() {
+    let msg = document.getElementById("chat-input").value;
+    if (msg.trim() === "") return;
+
+    let msgBox = document.getElementById("chatbot-messages");
+    msgBox.innerHTML += `<div class="user-msg">${msg}</div>`;
+    msgBox.scrollTop = msgBox.scrollHeight;
+
+    fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({"message": msg})
+    })
+    .then(res => res.json())
+    .then(data => {
+        msgBox.innerHTML += `<div class="bot-msg">${data.reply}</div>`;
+        msgBox.scrollTop = msgBox.scrollHeight;
+    });
+
+    document.getElementById("chat-input").value = "";
+}
+</script>
+
+</body>
+</html>

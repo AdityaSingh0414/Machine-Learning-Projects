@@ -1,0 +1,42 @@
+[
+    {
+        "N": 78.0,
+        "P": 89.0,
+        "K": 54.0,
+        "temperature": 54.0,
+        "humidity": 54.0,
+        "ph": 8.0,
+        "rainfall": 321.0,
+        "prediction": "banana"
+    },
+    {
+        "N": 54.0,
+        "P": 54.0,
+        "K": 78.0,
+        "temperature": 78.0,
+        "humidity": 78.0,
+        "ph": 8.0,
+        "rainfall": 61.0,
+        "prediction": "papaya"
+    },
+    {
+        "N": 21.0,
+        "P": 65.0,
+        "K": 32.0,
+        "temperature": 32.0,
+        "humidity": 21.0,
+        "ph": 3.0,
+        "rainfall": 32.0,
+        "prediction": "kidneybeans"
+    },
+    {
+        "N": 54.0,
+        "P": 87.0,
+        "K": 78.0,
+        "temperature": 54.0,
+        "humidity": 65.0,
+        "ph": 8.0,
+        "rainfall": 321.0,
+        "prediction": "chickpea"
+    }
+]

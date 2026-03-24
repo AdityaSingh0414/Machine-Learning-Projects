@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Crop AI – Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+    body {
+        font-family: "Poppins", sans-serif;
+        background: #f5f7fa;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        width: 90%;
+        margin: auto;
+        padding-top: 40px;
+    }
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2d2d2d;
+    }
+    .card {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 35px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    .chart-box {
+        width: 100%;
+        height: 350px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #e6e6e6;
+    }
+    th {
+        background: #e8e8ff;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📊 Crop Recommendation System – Analytics</h1>
+
+    <!-- ===================== PREDICTION FREQUENCY ======================= -->
+    <div class="card">
+        <h2>Crop Prediction Frequency</h2>
+        <canvas id="cropFreq"></canvas>
+    </div>
+
+    <!-- ===================== CONFIDENCE DISTRIBUTION ==================== -->
+    <div class="card">
+        <h2>Model Confidence Distribution</h2>
+        <canvas id="confidenceChart"></canvas>
+    </div>
+
+    <!-- ===================== DATASET COLUMNS ============================ -->
+    <div class="card">
+        <h2>Dataset Columns</h2>
+        <ul id="columnList"></ul>
+    </div>
+
+    <!-- ===================== DATA SUMMARY TABLE ========================= -->
+    <div class="card">
+        <h2>Dataset Summary Statistics</h2>
+        <table id="summaryTable"></table>
+    </div>
+
+    <!-- ===================== FEATURE HISTOGRAM ========================== -->
+    <div class="card">
+        <h2>Feature Distribution (Simulated Histogram)</h2>
+        <canvas id="histChart"></canvas>
+    </div>
+
+    <!-- ===================== CORRELATION HEATMAP ======================== -->
+    <div class="card">
+        <h2>Correlation Heatmap (Simulated)</h2>
+        <canvas id="heatmapChart"></canvas>
+    </div>
+
+</div>
+
+<script>
+    // ================== Flask Variables ===================
+    const labels = {{ labels|tojson }};
+    const counts = {{ counts|tojson }};
+    const confidences = {{ confidences|tojson }};
+    const dataset_columns = {{ dataset_columns|tojson }};
+    const dataset_summary = {{ dataset_summary|tojson }};
+
+    // ======================================================
+    // CROP PREDICTION FREQUENCY BAR CHART
+    // ======================================================
+    new Chart(document.getElementById("cropFreq"), {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Prediction Count",
+                data: counts,
+                backgroundColor: ["#6366F1", "#34D399", "#FBBF24", "#EC4899"]
+            }]
+        }
+    });
+
+    // ======================================================
+    // CONFIDENCE DISTRIBUTION LINE CHART
+    // ======================================================
+    new Chart(document.getElementById("confidenceChart"), {
+        type: "line",
+        data: {
+            labels: confidences.map((_, i) => "Attempt " + (i + 1)),
+            datasets: [{
+                label: "Confidence (%)",
+                data: confidences,
+                borderWidth: 3,
+                borderColor: "#6366F1",
+                fill: false
+            }]
+        }
+    });
+
+    // ======================================================
+    // DISPLAY DATASET COLUMNS
+    // ======================================================
+    const colList = document.getElementById("columnList");
+    dataset_columns.forEach(col => {
+        const li = document.createElement("li");
+        li.textContent = col;
+        colList.appendChild(li);
+    });
+
+    // ======================================================
+    // CREATE SUMMARY TABLE
+    // ======================================================
+    const table = document.getElementById("summaryTable");
+
+    table.innerHTML = `
+        <tr>
+            <th>Feature</th>
+            <th>Mean</th>
+            <th>Min</th>
+            <th>Max</th>
+            <th>Std Dev</th>
+        </tr>
+    `;
+
+    Object.keys(dataset_summary).forEach(feature => {
+        const stats = dataset_summary[feature];
+        table.innerHTML += `
+            <tr>
+                <td>${feature}</td>
+                <td>${stats.mean}</td>
+                <td>${stats.min}</td>
+                <td>${stats.max}</td>
+                <td>${stats.std}</td>
+            </tr>
+        `;
+    });
+
+    // ======================================================
+    // SIMULATED HISTOGRAM (Random Data)
+    // ======================================================
+    const randomData = dataset_columns.map(x => Math.floor(Math.random() * 100));
+    new Chart(document.getElementById("histChart"), {
+        type: "bar",
+        data: {
+            labels: dataset_columns,
+            datasets: [{
+                label: "Value Distribution (Simulated)",
+                data: randomData,
+                backgroundColor: "#F59E0B"
+            }]
+        }
+    });
+
+    // ======================================================
+    // SIMULATED HEATMAP
+    // ======================================================
+    const heatmapValues = dataset_columns.map(() =>
+        dataset_columns.map(() => Math.random().toFixed(2))
+    );
+
+    new Chart(document.getElementById("heatmapChart"), {
+        type: "matrix",
+        data: {
+            datasets: [{
+                label: "Correlation Heatmap",
+                data: heatmapValues.flatMap((row, r) =>
+                    row.map((v, c) => ({ x: c, y: r, v }))
+                ),
+                backgroundColor(ctx) {
+                    const value = ctx.dataset.data[ctx.dataIndex].v;
+                    const opacity = parseFloat(value);
+                    return `rgba(99, 102, 241, ${opacity})`;
+                },
+                width: ({ chart }) => chart.chartArea.width / dataset_columns.length,
+                height: ({ chart }) => chart.chartArea.height / dataset_columns.length
+            }]
+        },
+        options: {
+            scales: {
+                x: { labels: dataset_columns, offset: true },
+                y: { labels: dataset_columns, offset: true }
+            }
+        }
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset — Crop AI</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: #0d1117;
+            color: #fff;
+            font-family: Poppins, Arial;
+            display: flex;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: #111827;
+            padding: 25px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            border-right: 1px solid #1f2937;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 35px;
+            color: #4f8ef7;
+        }
+
+        .menu a {
+            display: block;
+            padding: 12px 10px;
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 18px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .menu a:hover {
+            background: #1f2937;
+            color: #fff;
+        }
+
+        /* Content */
+        .content {
+            margin-left: 280px;
+            padding: 30px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4f8ef7;
+        }
+
+        .card {
+            background: #111827;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 20px;
+            box-shadow: 0 0 10px #00000050;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+            background: #1f2937;
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #1f2937;
+            text-align: left;
+        }
+
+        th {
+            background: #1f2937;
+            cursor: pointer;
+        }
+
+        .download-btn {
+            padding: 10px 18px;
+            border: none;
+            background: #4f8ef7;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        /* LIGHT MODE */
+        body.light {
+            background: #f3f4f6;
+            color: #111;
+        }
+
+        body.light .sidebar {
+            background: #fff;
+        }
+
+        body.light .card {
+            background: #fff;
+            box-shadow: 0 0 10px #bbb;
+        }
+
+        .toggle-btn {
+            margin-top: 20px;
+            padding: 10px;
+            width: 100%;
+            background: #4f8ef7;
+            border: none;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">🌾 Crop AI</div>
+
+        <div class="menu">
+            <a href="/">🏠 Predict</a>
+            <a href="/analytics">📊 Analytics</a>
+            <a href="/dataset">📂 Dataset</a>
+            <a href="/history">⏱ History</a>
+        </div>
+
+        <button class="toggle-btn" onclick="toggleMode()">Toggle Light/Dark</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>Dataset Explorer</h1>
+
+        <div class="card">
+            <button class="download-btn" onclick="downloadCSV()">⬇ Download CSV</button>
+
+            <input type="text" id="searchBox" placeholder="Search crop, N, P, K, pH...">
+
+            <table id="datasetTable">
+                <thead>
+                    <tr>
+                        {% for col in columns %}
+                        <th onclick="sortTable({{ loop.index0 }})">{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for row in data %}
+                    <tr>
+                        {% for item in row %}
+                        <td>{{ item }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+<script>
+function toggleMode() {
+    document.body.classList.toggle("light");
+}
+
+// SEARCH FILTER
+document.getElementById("searchBox").addEventListener("keyup", function () {
+    let filter = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#datasetTable tbody tr");
+
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(filter) ? "" : "none";
+    });
+});
+
+// SORT TABLE
+function sortTable(n) {
+    let table = document.getElementById("datasetTable");
+    let switching = true;
+    let dir = "asc";
+
+    while (switching) {
+        switching = false;
+        let rows = table.rows;
+
+        for (let i = 1; i < (rows.length - 1); i++) {
+            let shouldSwitch = false;
+
+            let x = rows[i].getElementsByTagName("TD")[n];
+            let y = rows[i + 1].getElementsByTagName("TD")[n];
+
+            if (dir === "asc" && x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                shouldSwitch = true;
+                break;
+            }
+            if (dir === "desc" && x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                shouldSwitch = true;
+                break;
+            }
+        }
+
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+        } else {
+            dir = dir === "asc" ? "desc" : "asc";
+        }
+    }
+}
+
+// DOWNLOAD CSV
+function downloadCSV() {
+    window.location.href = "/download_dataset";
+}
+</script>
+
+</body>
+</html>
